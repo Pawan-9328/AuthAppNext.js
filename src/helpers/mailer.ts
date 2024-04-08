@@ -1,16 +1,33 @@
 import nodemailer from "nodemailer";
+import User from "@/models/userModel";
+import bcryptjs from "bcryptjs";
+import { verify } from "crypto";
 
-export const sendEmail = async ({emailType, userId,email}: any) => {
+export const sendEmail = async ({ emailType, userId, email }: any) => {
   try {
+    // create token using bcrypt.js
+    const hasedToken = await bcryptjs.hash(userId.toString(), 10);
+
     //TODO : configure mail for usage..
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 465,
-      secure: true, 
+    if (emailType === "VERIFY") {
+      await User.findByIdAndUpdate(userId, {
+        verifyToken: hasedToken,
+        verifyTokenExpiry: Date.now() + 3600000,
+      });
+    } else if (emailType === "RESET") {
+      await User.findByIdAndUpdate(userId, {
+        forgotPasswordToken: hasedToken,
+        forgotPasswordTokenExpiry: Date.now() + 3600000,
+      });
+    }
+
+    var transport = nodemailer.createTransport({
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
       auth: {
-        user: "maddison53@ethereal.email",
-        pass: "jn7jnAPss4f63QBp6D",
+        user: "4589c0c6c3d601", //⚠️❌
+        pass: "789f115d8845f6", // ⚠️❌
       },
     });
 
@@ -20,10 +37,16 @@ export const sendEmail = async ({emailType, userId,email}: any) => {
       subject:
         emailType === "VERIFY" ? "Verify your email " : "Reset your password",
       text: "Hello world?",
-      html: "<b>Hello world?</b>",
+      html: `<p>Click Here  <a href= "${
+        process.env.DOMAIN
+      } / verifyemail?token=${hasedToken}" > here </a> to ${
+        emailType === "VERIFY" ? "verify your email" : "reset your password"
+      }
+       or copy and paste the link below in your browser. <br>
+       ${process.env.DOMAIN}/ verifyemail?token=${hasedToken}  </p>`,
     };
 
-    const mailResponse = await transporter.sendMail(mailOptions);
+    const mailResponse = await transport.sendMail(mailOptions);
     return mailResponse;
   } catch (error: any) {
     throw new Error(error.message);
