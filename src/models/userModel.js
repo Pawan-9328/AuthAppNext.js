@@ -1,6 +1,4 @@
-import { verify } from "crypto";
 import mongoose from "mongoose";
-import { unique } from "next/dist/build/utils";
 
 
 const userSchema = new mongoose.Schema({
@@ -12,25 +10,25 @@ const userSchema = new mongoose.Schema({
    },
    email: {
       type: String,
-      required: [true, "Please provide a username"],
+      required: [true, "Please provide a email"],
       unique: true
    },
    password: {
       type: String,
-      required: [true, "Please provide a username"],
+      required: [true, "Please provide a password"],
 
    },
    isVerified: {
       type: Boolean,
       default: false,
-      unique: true
+      
    },
    isAdmin: {
       type: Boolean,
       default: false,
    },
    forgotPasswordToken: String,
-   forgotPasswordTokenExpiry: Data,
+   forgotPasswordTokenExpiry: Date,
    verifyToken: String,
    verifyTokenExpiry: Date
 
