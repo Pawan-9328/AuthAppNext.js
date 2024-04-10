@@ -37,6 +37,6 @@ const userSchema = new mongoose.Schema({
 // is good but in next.js is not good
 //const User = mongoose.model("user", userSchema);
 // so update it 
-const User = mongoose.model.users ||  mongoose.model("users", userSchema);
+const User = mongoose.models.users ||  mongoose.model("users", userSchema);
 
 export default User;

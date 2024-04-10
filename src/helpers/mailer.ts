@@ -3,24 +3,40 @@ import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 
 
-export const sendEmail = async ({ emailType, userId, email }: any) => {
+export const sendEmail = async ({email, emailType, userId }: any) => {
   try {
     // create token using bcrypt.js
     const hasedToken = await bcryptjs.hash(userId.toString(), 10);
+    console.log("MAIL", userId);
+    console.log("EMAIL TYPE", emailType);
+    console.log(typeof emailType);
 
     //TODO : configure mail for usage..
 
     if (emailType === "VERIFY") {
-      await User.findByIdAndUpdate(userId, {
-        verifyToken: hasedToken,
-        verifyTokenExpiry: Date.now() + 3600000,
+      console.log("VERIFY SECTION");
+
+      const updatedUser = await User.findByIdAndUpdate(userId, {
+        $set: {
+          verifyToken: hasedToken,
+          verifyTokenExpiry: new Date (Date.now() + 3600000)
+          // expiry 1hr from now
+        },
       });
-    } else if (emailType === "RESET") {
+      console.log("Updated User for VERIFY", updatedUser);
+    } 
+    else if (emailType === "RESET") {
       await User.findByIdAndUpdate(userId, {
-        forgotPasswordToken: hasedToken,
-        forgotPasswordTokenExpiry: Date.now() + 3600000,
+        //set - parameters 
+        $set: {
+     
+          forgotPasswordToken: hasedToken,
+          forgotPasswordTokenExpiry: new Date(Date.now() + 3600000)
+        },
       });
     }
+    console.log("Out side if else ");
+    
 
     var transport = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
@@ -32,6 +48,7 @@ export const sendEmail = async ({ emailType, userId, email }: any) => {
     });
 
     const mailOptions = {
+     
       from: "keshav@gmail.com",
       to: email,
       subject:
@@ -45,6 +62,7 @@ export const sendEmail = async ({ emailType, userId, email }: any) => {
        or copy and paste the link below in your browser. <br>
        ${process.env.DOMAIN}/ verifyemail?token=${hasedToken}  </p>`,
     };
+
 
     const mailResponse = await transport.sendMail(mailOptions);
     return mailResponse;

@@ -7,7 +7,7 @@ export async function connect() {
   try {
     //! used for yes i sure ki data aygega hi ayega or also used condition [if ]
     
-     await mongoose.connect(process.env.MONGODB_URL!);
+      mongoose.connect(process.env.MONGODB_URL!);
 
     const connection = mongoose.connection;
 

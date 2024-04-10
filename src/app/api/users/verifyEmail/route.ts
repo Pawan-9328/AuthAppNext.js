@@ -1,7 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel.js";
-import { error } from "console";
-import { verify } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 connect();
@@ -10,7 +8,7 @@ export async function POST(request: NextResponse) {
   try {
     const reqBody = await request.json();
     const { token } = reqBody;
-    console.log(token);
+    console.log("token hai kya ",token);
 
     const user = await User.findOne({
       verifyToken: token,
@@ -33,6 +31,7 @@ export async function POST(request: NextResponse) {
     return NextResponse.json(
       {
         message: "Email verified successfully ",
+        success: true
       },
       { status: 500 }
     );

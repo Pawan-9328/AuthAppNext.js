@@ -7,15 +7,19 @@ import { getDataFromToken } from "@/helpers/detDataFromToken";
 
 connect();
 
-export async function POST(request: NextRequest) {
-  // extract data from  token
-  const userId = await getDataFromToken(request);
-  // search id form the database
-  // -password used dash means could'nt need password value
-  const user = await User.findOne({ _id: userId }).select("-password");
-  // check if there is no user
-  return NextResponse.json({
-    message: "User Found",
-    data: user,
-  });
+export async function GET(request: NextRequest) {
+ try {
+   // extract data from  token
+   const userId = await getDataFromToken(request);
+   // search id form the database
+   // -password used dash means could'nt need password value
+   const user = await User.findOne({_id: userId }).select("-password");
+   // check if there is no user
+   return NextResponse.json({
+     message: "User Found",
+     data: user,
+   });
+ } catch (error: any) {
+  return NextResponse.json({error: error.message}, {status: 400});
+ }
 }
