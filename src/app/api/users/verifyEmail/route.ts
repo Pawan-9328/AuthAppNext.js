@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 connect();
 
-export async function POST(request: NextResponse) {
+export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { token } = reqBody;
@@ -12,8 +12,7 @@ export async function POST(request: NextResponse) {
 
     const user = await User.findOne({
       verifyToken: token,
-      verifyTokenExpiry: { $gt: Date.now() },
-    });
+      verifyTokenExpiry: { $gt: Date.now()}});
 
     if (!user) {
       return NextResponse.json({ error: "Invalid token " }, { status: 400 });

@@ -19,7 +19,7 @@ export const sendEmail = async ({email, emailType, userId }: any) => {
       const updatedUser = await User.findByIdAndUpdate(userId, {
         $set: {
           verifyToken: hasedToken,
-          verifyTokenExpiry: new Date (Date.now() + 3600000)
+          verifyTokenExpiry: (Date.now() + 3600000)
           // expiry 1hr from now
         },
       });
@@ -31,7 +31,7 @@ export const sendEmail = async ({email, emailType, userId }: any) => {
         $set: {
      
           forgotPasswordToken: hasedToken,
-          forgotPasswordTokenExpiry: new Date(Date.now() + 3600000)
+          forgotPasswordTokenExpiry: (Date.now() + 3600000)
         },
       });
     }
@@ -42,9 +42,9 @@ export const sendEmail = async ({email, emailType, userId }: any) => {
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: "4589c0c6c3d601", //⚠️❌
-        pass: "789f115d8845f6", // ⚠️❌
-      },
+        user: "ff2fef32fc7745",
+        pass: "e5e0d01e9100be"
+      }
     });
 
     const mailOptions = {
@@ -54,11 +54,10 @@ export const sendEmail = async ({email, emailType, userId }: any) => {
       subject:
         emailType === "VERIFY" ? "Verify your email " : "Reset your password",
       text: "Hello world?",
-      html: `<p>Click Here  <a href= "${
-        process.env.DOMAIN
-      } / verifyemail?token=${hasedToken}" > here </a> to ${
-        emailType === "VERIFY" ? "verify your email" : "reset your password"
-      }
+      html: `<p>Click Here  <a href= "
+      ${process.env.DOMAIN
+      } / verifyemail?token=${hasedToken}" > here </a> to
+       ${emailType === "VERIFY" ? "verify your email" : "reset your password"}
        or copy and paste the link below in your browser. <br>
        ${process.env.DOMAIN}/ verifyemail?token=${hasedToken}  </p>`,
     };
@@ -66,6 +65,8 @@ export const sendEmail = async ({email, emailType, userId }: any) => {
 
     const mailResponse = await transport.sendMail(mailOptions);
     return mailResponse;
+
+
   } catch (error: any) {
     throw new Error(error.message);
   }
